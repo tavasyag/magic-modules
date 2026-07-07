@@ -1,7 +1,7 @@
 {
   "name": "pr-highlighter",
   "displayName": "PR Highlighter",
-  "description": "Highlight lines by the GitHub PR that introduced them.\n\nUsage: Open any file in a GitHub repo and press Cmd+Alt+H (Mac) / Ctrl+Alt+H (Windows/Linux), or run 'PR Highlighter: Toggle PR Highlights' from the Command Palette. Press again to clear. Hover over any highlighted line to see PR details.\n\nRequires the gh CLI (gh auth login) or a GitHub token set in Settings under prHighlighter.githubToken.",
+  "description": "Highlight lines by the GitHub PR that introduced them.",
   "version": "0.1.0",
   "engines": {
     "vscode": "^1.85.0"
