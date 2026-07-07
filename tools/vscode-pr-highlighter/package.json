@@ -1,0 +1,61 @@
+{
+  "name": "pr-highlighter",
+  "displayName": "PR Highlighter",
+  "description": "Highlight lines by the GitHub PR that introduced them.\n\nUsage: Open any file in a GitHub repo and press Cmd+Alt+H (Mac) / Ctrl+Alt+H (Windows/Linux), or run 'PR Highlighter: Toggle PR Highlights' from the Command Palette. Press again to clear. Hover over any highlighted line to see PR details.\n\nRequires the gh CLI (gh auth login) or a GitHub token set in Settings under prHighlighter.githubToken.",
+  "version": "0.1.0",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hashicorp/magic-modules"
+  },
+  "categories": ["Other"],
+  "activationEvents": ["onCommand:prHighlighter.toggle"],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "prHighlighter.toggle",
+        "title": "PR Highlighter: Toggle PR Highlights"
+      },
+      {
+        "command": "prHighlighter.addToChat",
+        "title": "PR Highlighter: Add PR to Copilot Chat"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "prHighlighter.toggle",
+        "key": "ctrl+alt+h",
+        "mac": "cmd+alt+h",
+        "when": "editorTextFocus"
+      }
+    ],
+    "configuration": {
+      "title": "PR Highlighter",
+      "properties": {
+        "prHighlighter.githubToken": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "GitHub personal access token with `repo` scope. Leave empty to use the `gh` CLI auth token automatically."
+        },
+        "prHighlighter.enableCodeLens": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show CodeLens with PR number above each PR's first line in the file."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0"
+  }
+}
