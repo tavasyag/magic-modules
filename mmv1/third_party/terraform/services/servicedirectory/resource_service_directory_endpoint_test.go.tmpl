@@ -97,3 +97,57 @@ resource "google_service_directory_endpoint" "example" {
 }
 `, testId, location, testId, testId)
 }
+
+// Reproduces the bug where the API always returns `network` with the
+// project number, causing a permanent diff (and forced recreation, since
+// `network` is immutable) when the config uses the project ID instead.
+func TestAccServiceDirectoryEndpoint_networkProjectIdNoDiff(t *testing.T) {
+	t.Parallel()
+
+	project := envvar.GetTestProjectFromEnv()
+	location := "us-central1"
+	testId := fmt.Sprintf("tf-test-network-endpoint%s", acctest.RandString(t, 10))
+
+	acctest.VcrTest(t, resource.TestCase{
+		PreCheck:                 func() { acctest.AccTestPreCheck(t) },
+		ProtoV5ProviderFactories: acctest.ProtoV5ProviderFactories(t),
+		CheckDestroy:             testAccCheckServiceDirectoryEndpointDestroyProducer(t),
+		Steps: []resource.TestStep{
+			{
+				Config: testAccServiceDirectoryEndpoint_networkProjectId(project, location, testId),
+			},
+			{
+				Config:             testAccServiceDirectoryEndpoint_networkProjectId(project, location, testId),
+				PlanOnly:           true,
+				ExpectNonEmptyPlan: false,
+			},
+		},
+	})
+}
+
+func testAccServiceDirectoryEndpoint_networkProjectId(project, location, testId string) string {
+	return fmt.Sprintf(`
+resource "google_compute_network" "example" {
+  name = "%s"
+}
+
+resource "google_service_directory_namespace" "example" {
+  namespace_id = "%s"
+  location     = "%s"
+}
+
+resource "google_service_directory_service" "example" {
+  service_id = "%s"
+  namespace  = google_service_directory_namespace.example.id
+}
+
+resource "google_service_directory_endpoint" "example" {
+  endpoint_id = "%s"
+  service     = google_service_directory_service.example.id
+
+  network = "projects/%s/locations/global/networks/${google_compute_network.example.name}"
+  address = "1.2.3.4"
+  port    = 5353
+}
+`, testId, testId, location, testId, testId, project)
+}
